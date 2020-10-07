@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Net.Mime;
 using Newtonsoft.Json;
 using Xamarin.Forms;
 using Xamarin.Essentials;
@@ -86,51 +87,53 @@ namespace tthk_xamarin_tabbed
                     }
                     else
                     {
+                        ListView holidaysListView = new ListView(ListViewCachingStrategy.RecycleElementAndDataTemplate) // ListView haves caching
+                        {
+                            HasUnevenRows = true,
+                            ItemsSource = holidays,
+                            SelectionMode = ListViewSelectionMode.None,
+                            ItemTemplate = new DataTemplate(() =>
+                            {
+                                Label dayLabel = new Label()
+                                {
+                                    FontSize = 18,
+                                    VerticalOptions = LayoutOptions.FillAndExpand
+                                };
+                                dayLabel.SetBinding(Label.TextProperty, "Day");
+
+                                Label titleLabel = new Label()
+                                {
+                                    Padding = new Thickness(15, 0),
+                                    FontAttributes = FontAttributes.Bold,
+                                    VerticalOptions = LayoutOptions.FillAndExpand
+                                };
+                                titleLabel.SetBinding(Label.TextProperty, "Title");
+                                StackLayout dateWithHolidayLayout = new StackLayout()
+                                {
+                                    Children = {dayLabel, titleLabel},
+                                    Orientation = StackOrientation.Horizontal
+                                };
+                                Label kindLabel = new Label()
+                                {
+                                    FontAttributes = FontAttributes.Italic
+                                };
+                                kindLabel.SetBinding(Label.TextProperty, "Kind");
+                                return new ViewCell
+                                {
+                                    View = new StackLayout()
+                                    {
+                                        Padding = new Thickness(20, 5),
+                                        Orientation = StackOrientation.Vertical,
+                                        Children = {dateWithHolidayLayout, kindLabel}
+                                    }
+                                };
+                            })
+                        };
+                        holidaysListView.ItemTapped += HolidaysListViewOnItemTapped;
                         monthsContentPages[i, j] = new ContentPage()
                         {
                             Title = monthName,
-                            Content = new ListView(ListViewCachingStrategy.RecycleElementAndDataTemplate) // ListView haves caching
-                            {
-                                HasUnevenRows = true,
-                                ItemsSource = holidays,
-                                SelectionMode = ListViewSelectionMode.None,
-                                ItemTemplate = new DataTemplate(() =>
-                                {
-                                    Label dayLabel = new Label()
-                                    {
-                                        FontSize = 18,
-                                        VerticalOptions = LayoutOptions.FillAndExpand
-                                    };
-                                    dayLabel.SetBinding(Label.TextProperty, "Day");
-
-                                    Label titleLabel = new Label()
-                                    {
-                                        Padding = new Thickness(15, 0),
-                                        FontAttributes = FontAttributes.Bold,
-                                        VerticalOptions = LayoutOptions.FillAndExpand
-                                    };
-                                    titleLabel.SetBinding(Label.TextProperty, "Title");
-                                    StackLayout dateWithHolidayLayout = new StackLayout()
-                                    {
-                                        Children = {dayLabel, titleLabel},
-                                        Orientation = StackOrientation.Horizontal
-                                    };
-                                    Label kindLabel = new Label()
-                                    {
-                                        FontAttributes = FontAttributes.Italic
-                                    };
-                                    kindLabel.SetBinding(Label.TextProperty, "Kind");
-                                    return new ViewCell
-                                    {
-                                        View = new StackLayout()
-                                        {
-                                            Padding = new Thickness(20,5),
-                                            Orientation = StackOrientation.Vertical,
-                                            Children = {dateWithHolidayLayout, kindLabel}
-                                        }
-                                    };
-                                })
-                            }
+                            Content = holidaysListView
                         };
                     }
                     seasonsTabbedPages[i].Children.Add(monthsContentPages[i, j]);
@@ -138,6 +141,20 @@ namespace tthk_xamarin_tabbed
 
                 Children.Add(seasonsTabbedPages[i]);
             }
+        }
+
+        private async void HolidaysListViewOnItemTapped(object sender, ItemTappedEventArgs e)
+        {
+            if (e.Item != null)
+            {
+                var content = e.Item as Holiday;
+                var text = $"{content.Title} {content.Date.Day}.{content.Date.Month}.{content.Date.Year} {content.Kind}";
+                await DisplayAlert("Kooperitud",
+                    $"{content.Title} {content.Date.Day}.{content.Date.Month}.{content.Date.Year} {content.Kind} on kopeeritud",
+                    "OK");
+                await Clipboard.SetTextAsync(text); // Copy to clipboard of tapped holiday.
+            }
+            ((ListView)sender).SelectedItem = null;
         }
 
         private async void YearChooseClicked(object sender, EventArgs e)
