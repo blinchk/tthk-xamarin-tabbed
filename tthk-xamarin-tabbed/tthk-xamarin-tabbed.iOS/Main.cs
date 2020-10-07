@@ -1,8 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using Foundation;
-using UIKit;
+﻿using UIKit;
 
 namespace tthk_xamarin_tabbed.iOS
 {

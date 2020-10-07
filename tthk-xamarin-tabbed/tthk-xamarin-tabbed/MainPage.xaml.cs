@@ -1,17 +1,14 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Net.Mime;
-using Newtonsoft.Json;
 using Xamarin.Forms;
 using Xamarin.Essentials;
 
 namespace tthk_xamarin_tabbed
 {
-    public partial class MainPage : TabbedPage
+    public partial class MainPage
     {
-        private const int SEASONS_COUNT = 4;
-        private const int MONTHS_COUNT = 3;
+        private const int SeasonsCount = 4;
+        private const int MonthsCount = 3;
         private List<TabbedPage> seasonsTabbedPages;
         private ContentPage[,] monthsContentPages;
         private ContentPage March, Aprill, May, 
@@ -28,14 +25,14 @@ namespace tthk_xamarin_tabbed
             yearChoose.Clicked += YearChooseClicked;
             ToolbarItems.Add(yearChoose);
             Title = "Pühad " + Preferences.Get("year", DateTime.Now.Year.ToString());
-            string[] seasonNames = new string[SEASONS_COUNT] { "Kevad", "Suvi", "Sügis", "Talv" };
-            string[,] monthsNames = new string[SEASONS_COUNT, MONTHS_COUNT] { 
+            string[] seasonNames = new string[] { "Kevad", "Suvi", "Sügis", "Talv" };
+            string[,] monthsNames = new string[,] { 
                 {"Märts", "Aprill", "Mai"}, 
                 {"Juuni", "Juuli", "August"}, 
                 {"September", "Oktoober", "November"}, 
                 {"Detsember", "Jaanuar", "Veebruar"}
             }; 
-            monthsContentPages = new ContentPage[SEASONS_COUNT, MONTHS_COUNT] {
+            monthsContentPages = new[,] {
                 {March, Aprill, May}, 
                 {June, July, August}, 
                 {September, October, November},
@@ -47,13 +44,13 @@ namespace tthk_xamarin_tabbed
                 fallTabbedPage, 
                 winterTabbedPage};
             Loader loader = new Loader();
-            for (int i = 0; i < SEASONS_COUNT; i++)
+            for (int i = 0; i < SeasonsCount; i++)
             {
                 seasonsTabbedPages[i] = new TabbedPage()
                 {
                     Title = seasonNames[i]
                 };
-                for (int j = 0; j < MONTHS_COUNT; j++)
+                for (int j = 0; j < MonthsCount; j++)
                 {
                     var holidays = loader.GetMonthHolidays(i, j);
                     string monthName = monthsNames[i, j];
@@ -148,11 +145,14 @@ namespace tthk_xamarin_tabbed
             if (e.Item != null)
             {
                 var content = e.Item as Holiday;
-                var text = $"{content.Title} {content.Date.Day}.{content.Date.Month}.{content.Date.Year} {content.Kind}";
-                await DisplayAlert("Kooperitud",
-                    $"{content.Title} {content.Date.Day}.{content.Date.Month}.{content.Date.Year} {content.Kind} on kopeeritud",
-                    "OK");
-                await Clipboard.SetTextAsync(text); // Copy to clipboard of tapped holiday.
+                if (content != null)
+                {
+                    var text = $"{content.Title} {content.Date.Day}.{content.Date.Month}.{content.Date.Year} {content.Kind}";
+                    await DisplayAlert($"{content.Title}",
+                        $"{content.Date.Day}.{content.Date.Month}.{content.Date.Year}\n{content.Kind}\non kopeeritud",
+                        "OK");
+                    await Clipboard.SetTextAsync(text); // Copy to clipboard of tapped holiday.
+                }
             }
             ((ListView)sender).SelectedItem = null;
         }
@@ -163,7 +163,7 @@ namespace tthk_xamarin_tabbed
             string[] availableHolidaysYears = new string[5];
             for (int i = 0; i < 5; i++)
             {
-                int year = DateTime.Now.Year + i;
+                int year = currentYear + i;
                 availableHolidaysYears[i] = year.ToString();
             }
             string selectedYear = await DisplayActionSheet("Vali aasta", "Katkesta", null, availableHolidaysYears);
