@@ -24,7 +24,7 @@ namespace tthk_xamarin_tabbed
             this.BindingContext = this;
         }
 
-        public MonthPageModel()
+        public MonthPageModel()g
         {
             ListView listView = new ListView
             {
