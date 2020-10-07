@@ -1,8 +1,11 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Net;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
+using Xamarin.Essentials;
+using Xamarin.Forms;
 
 namespace tthk_xamarin_tabbed
 {
@@ -20,6 +23,23 @@ namespace tthk_xamarin_tabbed
             holidaysArray = JArray.Parse(loadedJson);
         }
         
+        internal List<Holiday> GetMonthHolidays(int season, int month)
+        {
+            holidays = GetHolidays();
+            int[,] monthBySeason = new int[4,3] { {3,4,5} , {6,7,8} , {9, 10, 11} , {12,1,2}};
+            List<Holiday> selectedHolidays = new List<Holiday>();
+            string selectedYear = Preferences.Get("year", DateTime.Now.Year.ToString());
+            foreach (var holiday in holidays)
+            {
+                if (holiday.Date.Month == monthBySeason[season, month] && holiday.Date.Year.ToString() == selectedYear)
+                {
+                    selectedHolidays.Add(holiday);
+                }
+            }
+
+            return selectedHolidays;
+        }
+        
         internal List<Holiday> GetHolidays()
         {
             holidays = new List<Holiday>();
@@ -30,5 +50,7 @@ namespace tthk_xamarin_tabbed
             }
             return holidays;
         }
+
+        
     }
 }
