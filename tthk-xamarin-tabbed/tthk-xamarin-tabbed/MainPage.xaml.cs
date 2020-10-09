@@ -2,6 +2,9 @@
 using System.Collections.Generic;
 using Xamarin.Forms;
 using Xamarin.Essentials;
+using System.Runtime.CompilerServices;
+using System.Linq;
+using Newtonsoft.Json.Schema.Generation;
 
 namespace tthk_xamarin_tabbed
 {
@@ -93,8 +96,9 @@ namespace tthk_xamarin_tabbed
                             {
                                 Label dayLabel = new Label()
                                 {
-                                    FontSize = 18,
-                                    VerticalOptions = LayoutOptions.FillAndExpand
+                                    FontSize = 23,
+                                    VerticalOptions = LayoutOptions.FillAndExpand,
+                                    VerticalTextAlignment = TextAlignment.Center
                                 };
                                 dayLabel.SetBinding(Label.TextProperty, "Day");
 
@@ -102,7 +106,8 @@ namespace tthk_xamarin_tabbed
                                 {
                                     Padding = new Thickness(15, 0),
                                     FontAttributes = FontAttributes.Bold,
-                                    VerticalOptions = LayoutOptions.FillAndExpand
+                                    VerticalOptions = LayoutOptions.FillAndExpand,
+                                    VerticalTextAlignment = TextAlignment.Center
                                 };
                                 titleLabel.SetBinding(Label.TextProperty, "Title");
                                 StackLayout dateWithHolidayLayout = new StackLayout()
@@ -140,6 +145,14 @@ namespace tthk_xamarin_tabbed
             }
         }
 
+        public string FirstLetterToUpper(string str)
+        {
+            if (str.Length > 1)
+                return char.ToUpper(str[0]) + str.Substring(1);
+            else
+                return str;
+        }
+
         private async void HolidaysListViewOnItemTapped(object sender, ItemTappedEventArgs e)
         {
             if (e.Item != null)
@@ -147,7 +160,8 @@ namespace tthk_xamarin_tabbed
                 var content = e.Item as Holiday;
                 if (content != null)
                 {
-                    var text = $"{content.Date.Day}.{content.Date.Month}.{content.Date.Year} tähistatakse {content.Title}, mis on {content.Kind}.";
+                    string text;
+                    text = $"{content.Date.Day}.{content.Date.Month}.{content.Date.Year} tähistatakse {content.Title}, mis on {content.Kind}.";
                     ShareText(text);
                 }
             }
