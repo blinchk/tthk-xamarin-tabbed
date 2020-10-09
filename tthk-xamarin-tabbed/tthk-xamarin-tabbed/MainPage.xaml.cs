@@ -147,11 +147,8 @@ namespace tthk_xamarin_tabbed
                 var content = e.Item as Holiday;
                 if (content != null)
                 {
-                    var text = $"{content.Title} {content.Date.Day}.{content.Date.Month}.{content.Date.Year} {content.Kind}";
-                    await DisplayAlert($"{content.Title}",
-                        $"{content.Date.Day}.{content.Date.Month}.{content.Date.Year}\n{content.Kind}\non kopeeritud",
-                        "OK");
-                    await Clipboard.SetTextAsync(text); // Copy to clipboard of tapped holiday.
+                    var text = $"{content.Date.Day}.{content.Date.Month}.{content.Date.Year} tähistatakse {content.Title}, mis on {content.Kind}.";
+                    ShareText(text);
                 }
             }
             ((ListView)sender).SelectedItem = null;
@@ -181,6 +178,15 @@ namespace tthk_xamarin_tabbed
             Loader loader = new Loader();
             List<Holiday> holidays = loader.GetHolidays();
             return holidays;
+        }
+
+        public async void ShareText(string text)
+        {
+            await Share.RequestAsync(new ShareTextRequest
+            {
+                Text = text,
+                Title = "Saatada püha"
+            });
         }
     }
 }
