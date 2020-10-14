@@ -6,7 +6,6 @@ namespace tthk_xamarin_tabbed
     public class Holiday
     {
         private string title;
-
         public DateTime Date { get; set; }
         public int Day
         {
@@ -16,6 +15,7 @@ namespace tthk_xamarin_tabbed
             get { return title.First().ToString().ToUpper() + title.Substring(1); }
             set { title = value;  }
         }
+        public string Flag { get; set; }
         public string Notes { get; set; }
         public string Kind { get; set; }
     }

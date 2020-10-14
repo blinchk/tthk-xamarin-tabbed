@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Net;
 using Newtonsoft.Json.Linq;
 using Xamarin.Essentials;
@@ -10,12 +11,15 @@ namespace tthk_xamarin_tabbed
     public class Loader
     {
         private readonly string loadedJson;
-        private JArray holidaysArray;
+        private readonly JArray holidaysArray;
+        readonly string[] daysWithFlag;
 
         public Loader()
         {
             loadedJson = new WebClient().DownloadString("https://xn--riigiphad-v9a.ee/?output=json");
             holidaysArray = JArray.Parse(loadedJson);
+            daysWithFlag = new string[] {"Tartu rahulepingu aastapäev", "Iseseisvuspäev, Eesti Vabariigi aastapäev", "Emakeelepäev", "Leinapäev", "Võidupüha",
+            "Jaanipäev", "Taasiseseisvumispäev", "Hõimupäev", "Isadepäev"};
         }
         
         internal List<Holiday> GetMonthHolidays(int season, int month)
@@ -28,6 +32,10 @@ namespace tthk_xamarin_tabbed
             {
                 if (holiday.Date.Month == monthBySeason[season, month] && holiday.Date.Year.ToString() == selectedYear)
                 {
+                    if (daysWithFlag.Contains(holiday.Title))
+                    {
+                        holiday.Flag = "🇪🇪";
+                    }
                     selectedHolidays.Add(holiday);
                 }
             }

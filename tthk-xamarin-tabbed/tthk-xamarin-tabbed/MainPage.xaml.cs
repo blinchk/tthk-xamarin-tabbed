@@ -12,13 +12,25 @@ namespace tthk_xamarin_tabbed
     {
         private const int SeasonsCount = 4;
         private const int MonthsCount = 3;
-        private List<TabbedPage> seasonsTabbedPages;
-        private ContentPage[,] monthsContentPages;
-        private ContentPage March, Aprill, May, 
-            June, July, August, 
-            September, October, November, 
-            December, January, February;
-        private TabbedPage springTabbedPage, summerTabbedPage, fallTabbedPage, winterTabbedPage;
+        private readonly List<TabbedPage> seasonsTabbedPages;
+        private readonly ContentPage[,] monthsContentPages;
+        private readonly ContentPage March;
+        private readonly ContentPage Aprill;
+        private readonly ContentPage May;
+        private readonly ContentPage June;
+        private readonly ContentPage July;
+        private readonly ContentPage August;
+        private readonly ContentPage September;
+        private readonly ContentPage October;
+        private readonly ContentPage November;
+        private readonly ContentPage December;
+        private readonly ContentPage January;
+        private readonly ContentPage February;
+        private readonly TabbedPage springTabbedPage;
+        private readonly TabbedPage summerTabbedPage;
+        private readonly TabbedPage fallTabbedPage;
+        private readonly TabbedPage winterTabbedPage;
+
         public MainPage()
         {
             ToolbarItem yearChoose = new ToolbarItem()
@@ -27,14 +39,14 @@ namespace tthk_xamarin_tabbed
             };
             yearChoose.Clicked += YearChooseClicked;
             ToolbarItems.Add(yearChoose);
-            Title = "Pühad " + Preferences.Get("year", DateTime.Now.Year.ToString());
+            Title = "📅 Pühad " + Preferences.Get("year", DateTime.Now.Year.ToString());
             string[] seasonNames = new string[] { "Kevad", "Suvi", "Sügis", "Talv" };
-            string[,] monthsNames = new string[,] { 
-                {"Märts", "Aprill", "Mai"}, 
-                {"Juuni", "Juuli", "August"}, 
-                {"September", "Oktoober", "November"}, 
+            string[,] monthsNames = new string[,] {
+                {"Märts", "Aprill", "Mai"},
+                {"Juuni", "Juuli", "August"},
+                {"September", "Oktoober", "November"},
                 {"Detsember", "Jaanuar", "Veebruar"}
-            }; 
+            };
             monthsContentPages = new[,] {
                 {March, Aprill, May}, 
                 {June, July, August}, 
@@ -46,6 +58,7 @@ namespace tthk_xamarin_tabbed
                 summerTabbedPage,
                 fallTabbedPage, 
                 winterTabbedPage};
+
             Loader loader = new Loader();
             for (int i = 0; i < SeasonsCount; i++)
             {
@@ -94,11 +107,20 @@ namespace tthk_xamarin_tabbed
                             SelectionMode = ListViewSelectionMode.None,
                             ItemTemplate = new DataTemplate(() =>
                             {
-                                Label dayLabel = new Label()
+                                Label estonianFlag = new Label()
                                 {
-                                    FontSize = 23,
+                                    FontSize = 22,
                                     VerticalOptions = LayoutOptions.FillAndExpand,
                                     VerticalTextAlignment = TextAlignment.Center
+                                };
+                                estonianFlag.SetBinding(Label.TextProperty, "Flag");
+
+                                Label dayLabel = new Label()
+                                {
+                                    FontSize = 22,
+                                    VerticalTextAlignment = TextAlignment.Center,
+                                    MaxLines = 1,
+                                    WidthRequest = 30
                                 };
                                 dayLabel.SetBinding(Label.TextProperty, "Day");
 
@@ -112,7 +134,7 @@ namespace tthk_xamarin_tabbed
                                 titleLabel.SetBinding(Label.TextProperty, "Title");
                                 StackLayout dateWithHolidayLayout = new StackLayout()
                                 {
-                                    Children = {dayLabel, titleLabel},
+                                    Children = {estonianFlag, dayLabel, titleLabel},
                                     Orientation = StackOrientation.Horizontal
                                 };
                                 Label kindLabel = new Label()
@@ -145,23 +167,14 @@ namespace tthk_xamarin_tabbed
             }
         }
 
-        public string FirstLetterToUpper(string str)
-        {
-            if (str.Length > 1)
-                return char.ToUpper(str[0]) + str.Substring(1);
-            else
-                return str;
-        }
-
-        private async void HolidaysListViewOnItemTapped(object sender, ItemTappedEventArgs e)
+        private void HolidaysListViewOnItemTapped(object sender, ItemTappedEventArgs e)
         {
             if (e.Item != null)
             {
-                var content = e.Item as Holiday;
-                if (content != null)
+                if (e.Item is Holiday content)
                 {
                     string text;
-                    text = $"{content.Date.Day}.{content.Date.Month}.{content.Date.Year} tähistatakse {content.Title}, mis on {content.Kind}.";
+                    text = $"{content.Flag} {content.Date.Day}.{content.Date.Month}.{content.Date.Year} tähistatakse {content.Title}, mis on {content.Kind}.";
                     ShareText(text);
                 }
             }
