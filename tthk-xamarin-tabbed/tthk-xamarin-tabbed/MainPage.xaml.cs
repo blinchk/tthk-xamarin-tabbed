@@ -174,7 +174,15 @@ namespace tthk_xamarin_tabbed
                 if (e.Item is Holiday content)
                 {
                     string text;
+                    string linkTitle = content.Title.Replace(" ", "+")
+                                                    .Replace(",", "%2C")
+                                                    .ToLower()
+                                                    .Trim();
                     text = $"{content.Flag} {content.Date.Day}.{content.Date.Month}.{content.Date.Year} tähistatakse {content.Title}, mis on {content.Kind}.";
+                    if (content.Kind == "Riigipüha")
+                    {
+                        text += "\nRohkem: https://xn--riigiphad-v9a.ee/et/" + linkTitle;
+                    }
                     ShareText(text);
                 }
             }
